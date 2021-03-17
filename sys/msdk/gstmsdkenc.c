@@ -1196,7 +1196,9 @@ gst_msdkenc_create_buffer_pool (GstMsdkEnc * thiz, GstCaps * caps,
     goto error_no_allocator;
 
   config = gst_buffer_pool_get_config (GST_BUFFER_POOL_CAST (pool));
-  gst_buffer_pool_config_set_params (config, caps, info.size, num_buffers, 0);
+  /* Do not support dynamic buffer count change */
+  gst_buffer_pool_config_set_params (config, caps, info.size, num_buffers,
+      num_buffers);
   gst_buffer_pool_config_add_option (config, GST_BUFFER_POOL_OPTION_VIDEO_META);
   gst_buffer_pool_config_add_option (config,
       GST_BUFFER_POOL_OPTION_VIDEO_ALIGNMENT);
@@ -1846,7 +1848,7 @@ gst_msdkenc_propose_allocation (GstVideoEncoder * encoder, GstQuery * query)
   pool = gst_msdkenc_create_buffer_pool (thiz, caps, num_buffers, TRUE);
 
   gst_query_add_allocation_pool (query, pool, GST_VIDEO_INFO_SIZE (&info),
-      num_buffers, 0);
+      num_buffers, num_buffers);
   gst_query_add_allocation_meta (query, GST_VIDEO_META_API_TYPE, NULL);
 
   if (pool) {
