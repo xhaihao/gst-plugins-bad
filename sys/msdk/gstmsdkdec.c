@@ -1347,7 +1347,7 @@ gst_msdkdec_create_buffer_pool (GstMsdkDec * thiz, GstVideoInfo * info,
   config = gst_buffer_pool_get_config (GST_BUFFER_POOL_CAST (pool));
   /* we need register all bufffers when we create the msdk context, so the buffer pool is not resize able */
   gst_buffer_pool_config_set_params (config, caps,
-      GST_VIDEO_INFO_SIZE (info), num_buffers, num_buffers);
+      GST_VIDEO_INFO_SIZE (info), num_buffers, 0);
   gst_buffer_pool_config_add_option (config, GST_BUFFER_POOL_OPTION_VIDEO_META);
   gst_buffer_pool_config_add_option (config,
       GST_BUFFER_POOL_OPTION_VIDEO_ALIGNMENT);
@@ -1487,7 +1487,7 @@ gst_msdkdec_decide_allocation (GstVideoDecoder * decoder, GstQuery * query)
 
     /* Update params to downstream's pool */
     gst_buffer_pool_config_set_params (pool_config, pool_caps, size,
-        min_buffers, max_buffers);
+        min_buffers, 0);
     if (!gst_buffer_pool_set_config (pool, pool_config))
       goto error_set_config;
     gst_video_info_from_caps (&thiz->non_msdk_pool_info, pool_caps);
@@ -1502,8 +1502,7 @@ gst_msdkdec_decide_allocation (GstVideoDecoder * decoder, GstQuery * query)
     gst_video_codec_state_unref (output_state);
   }
 
-  gst_query_set_nth_allocation_pool (query, 0, pool, size, min_buffers,
-      max_buffers);
+  gst_query_set_nth_allocation_pool (query, 0, pool, size, min_buffers, 0);
 
   if (pool)
     gst_object_unref (pool);
